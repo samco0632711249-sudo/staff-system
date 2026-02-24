@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Staff Master System V8.1</title>
+    <title>Staff Master System - Advance 1 Day</title>
     <style>
         :root { --primary: #1e3a8a; --bg-gradient: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%); }
         body { font-family: 'Kanit', sans-serif; background: var(--bg-gradient); background-attachment: fixed; margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; }
         .container { max-width: 500px; width: 100%; background: rgba(255, 255, 255, 0.98); padding: 15px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; }
         h2 { color: var(--primary); text-align: center; font-size: 17px; margin: 5px 0; }
         .btn-settings { position: absolute; right: 15px; top: 15px; background: #f1f5f9; padding: 5px; border-radius: 8px; cursor: pointer; border: 1px solid #e2e8f0; font-size: 14px; }
-        .date-display { text-align: center; color: #1e40af; font-weight: 600; margin-bottom: 10px; background: #e0f2fe; padding: 5px; border-radius: 8px; font-size: 13px; }
+        .date-display { text-align: center; color: #b91c1c; font-weight: 600; margin-bottom: 10px; background: #fee2e2; padding: 5px; border-radius: 8px; font-size: 14px; border: 1px solid #fca5a5; }
         
-        /* ส่วนแต้ม OT แบบย่อขนาด */
         .section { background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 12px; padding: 10px; margin-bottom: 10px; }
-        .ot-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; } /* แบ่ง 2 คอลัมน์ให้ประหยัดที่ */
+        .ot-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
         .ot-row { display: flex; align-items: center; justify-content: space-between; background: white; padding: 4px 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .ot-name { font-size: 12px; color: #334155; }
         .ot-controls { display: flex; align-items: center; gap: 5px; }
@@ -35,7 +34,6 @@
         .locked.is-holiday { background: #fff5f5; color: #e03131; border-color: #ffc9c9; text-align: center; font-weight: bold; }
         .locked.special-point { background: #e0f2fe; color: #0369a1; border-color: #7dd3fc; text-align: center; font-weight: bold; }
         .btn-copy { width: 100%; padding: 15px; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .settings-panel { display: none; text-align: center; }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -43,12 +41,12 @@
 
 <div class="container">
     <div id="mainView">
-        <div class="btn-settings" onclick="toggleView()">⚙️</div>
-        <h2>✨ ตารางพนักงาน ✨</h2>
+        <div class="btn-settings" onclick="alert('ระบบบันทึกรายชื่ออัตโนมัติ')">⚙️</div>
+        <h2>✨ จัดตารางงานล่วงหน้า ✨</h2>
         <div id="dateDisplay" class="date-display"></div>
 
         <div class="section">
-            <div style="font-weight: 600; color: #166534; font-size: 13px; margin-bottom:8px;">🏠 แต้ม OT วันหยุดสะสม:</div>
+            <div id="otTitle" style="font-weight: 600; color: #166534; font-size: 13px; margin-bottom:8px;">🏠 แต้ม OT คนหยุดพรุ่งนี้:</div>
             <div id="otContainer" class="ot-group"></div>
         </div>
 
@@ -60,36 +58,26 @@
         <div id="staffList"></div>
         <button class="btn-copy" onclick="copyResult()">🚀 คัดลอกส่ง LINE 🚀</button>
     </div>
-
-    <div id="settingsView" class="settings-panel">
-        <h2 style="font-size: 16px;">🛠️ ตั้งค่าระบบ</h2>
-        <p style="font-size: 12px; color:#64748b;">(จัดการชื่อพนักงานในโค้ดหรือ LocalStorage)</p>
-        <button class="btn-copy" style="background:#64748b;" onclick="toggleView()">💾 กลับหน้าหลัก</button>
-    </div>
 </div>
 
 <script>
-let mainStaff = ["บุญตา", "บิว", "นาวิน", "กาญจนา", "วัด", "จันทร์", "พล", "กิตติ", "โซ่สุ", "อุไร"];
-let holidayDB = {
+// รายชื่อ 10 คนหลัก
+const mainStaff = ["บุญตา", "บิว", "นาวิน", "กาญจนา", "วัด", "จันทร์", "พล", "กิตติ", "โซ่สุ", "อุไร"];
+
+// ตารางวันหยุด
+const holidayDB = {
     0: ["สมัย", "สุนทรี", "ชัชชัย", "ขันธะลี", "จิรสุดา", "อิ่มตี้", "ติม", "ราณี", "กัญญาภัทร", "กิตติ"], 
     1: ["ชลธิชา", "รุ่งนภา", "เจาะ", "ลำพูน", "สุวันนา", "ชนัญชิตา", "อนุวัฒน์", "น้องลัด"], 
     2: ["ปาณิศรา", "จันทนา", "สุกัญญา", "เพียบ", "วุฒิ", "ปริยนุช", "อาท", "สุริยา", "หนูนิด", "จิดาภา", "จิตรพงษ์"], 
     3: ["แพงศรี", "กาญจนา", "พล", "ทองสูน", "ประไพ", "ประพันธ์แสง", "ธวัช", "ปราโมทย์", "สุชาดา", "อนงค์", "วรรตาภา", "พิมวดี"], 
     4: ["แอ๊ะแอ๊ะ", "ณิชาดา", "สมสาย", "สีนวล", "ดาด้า", "อำนวย", "ลัดดาวัลย์", "จันทร์", "บิว", "นาวิน"], 
-    5: ["กรรณิกา", "น้ำอ้อย", "นิด", "ซูลกิฟลี", "ผ่องศรี", "แสง", "แตงโม", "บุญตา", "พลากร", "ลอย"], 
+    5: ["กรรณิกา", "น้ำอ้อย", "นิด", "ซูลกifลี", "ผ่องศรี", "แสง", "แตงโม", "บุญตา", "พลากร", "ลอย"], 
     6: ["วัด", "สายใจ", "เขมิกา", "ยุวดี", "นิตยา", "ปุ้ม", "นิดา", "ลำดวน", "โซ่สุ", "อุไร"]
 };
 
 const timeSlots = ["07:00 - 19:00", "08:00 - 20:00", "09:00 - 21:00", "09:30 - 20:30", "09:30 - 21:30", "10:00 - 22:00"];
-let otHistory = JSON.parse(localStorage.getItem('ot_v8.1')) || {};
+let otHistory = JSON.parse(localStorage.getItem('ot_v9')) || {};
 let isHoliday = false;
-
-function toggleView() {
-    const main = document.getElementById('mainView');
-    const settings = document.getElementById('settingsView');
-    if (main.style.display === 'none') { main.style.display = 'block'; settings.style.display = 'none'; }
-    else { main.style.display = 'none'; settings.style.display = 'block'; }
-}
 
 function toggleHoliday() {
     isHoliday = !isHoliday;
@@ -99,39 +87,60 @@ function toggleHoliday() {
 
 function updateOT(name, val) {
     otHistory[name] = Math.max(0, (otHistory[name] || 0) + val);
-    localStorage.setItem('ot_v8.1', JSON.stringify(otHistory));
+    localStorage.setItem('ot_v9', JSON.stringify(otHistory));
     renderList();
 }
 
 function renderList() {
-    const today = new Date();
-    const day = today.getDay();
-    document.getElementById('dateDisplay').innerText = `📅 ${today.toLocaleDateString('th-TH', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}`;
+    // ระบบวันที่ +1 วันอัตโนมัติ
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + 1); // บวกไป 1 วัน
+    const day = targetDate.getDay(); 
+    
+    document.getElementById('dateDisplay').innerText = `📅 จัดตารางของวันพรุ่งนี้: วัน${targetDate.toLocaleDateString('th-TH', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}`;
 
+    // เรนเดอร์ OT อัตโนมัติ: ดึงเฉพาะคนที่มีชื่อหยุดใน "วันพรุ่งนี้"
     let otHtml = '';
-    mainStaff.forEach(n => {
-        let count = otHistory[n] || 0;
-        otHtml += `
-            <div class="ot-row">
-                <span class="ot-name">${n}</span>
-                <div class="ot-controls">
-                    <button class="btn-ot btn-minus" onclick="updateOT('${n}', -1)">-</button>
-                    <span class="ot-val">${count}</span>
-                    <button class="btn-ot btn-plus" onclick="updateOT('${n}', 1)">+</button>
-                </div>
-            </div>`;
-    });
+    const peopleOffTomorrow = holidayDB[day] || [];
+    
+    // กรองเอาเฉพาะ 10 คนหลักที่หยุดในวันพรุ่งนี้มาโชว์ในช่อง OT
+    const mainStaffOff = mainStaff.filter(name => peopleOffTomorrow.includes(name));
+    
+    if (mainStaffOff.length > 0) {
+        mainStaffOff.forEach(n => {
+            let count = otHistory[n] || 0;
+            otHtml += `
+                <div class="ot-row">
+                    <span class="ot-name">${n}</span>
+                    <div class="ot-controls">
+                        <button class="btn-ot btn-minus" onclick="updateOT('${n}', -1)">-</button>
+                        <span class="ot-val">${count}</span>
+                        <button class="btn-ot btn-plus" onclick="updateOT('${n}', 1)">+</button>
+                    </div>
+                </div>`;
+        });
+        document.getElementById('otTitle').innerText = "🏠 แต้ม OT คนหยุด (พรุ่งนี้):";
+    } else {
+        otHtml = '<div style="font-size:11px; color:#94a3b8; text-align:center; grid-column: 1/3;">ไม่มีพนักงานหลักหยุดในวันพรุ่งนี้</div>';
+    }
     document.getElementById('otContainer').innerHTML = otHtml;
 
+    // เรนเดอร์ตารางพนักงาน
     let html = '';
     mainStaff.forEach(name => {
         let currentPoint = "ว่าง";
         let isLocked = false;
         let lockClass = "locked is-holiday";
 
-        if (holidayDB[day] && holidayDB[day].includes(name)) { currentPoint = "🏠 หยุดพักผ่อน"; isLocked = true; }
+        // เช็ควันหยุด (ของวันพรุ่งนี้)
+        if (peopleOffTomorrow.includes(name)) { currentPoint = "🏠 หยุดพักผ่อน"; isLocked = true; }
+        
+        // เงื่อนไข กาญจนา นักขัตฤกษ์
         if (name === "กาญจนา" && isHoliday) { currentPoint = "ห้องน้ำ 2A"; isLocked = true; lockClass = "locked special-point"; }
+        
+        // พล ทำงานปกติ 3K
         if (name === "พล" && !isLocked) { currentPoint = "3K บ่อขยะ"; }
+        
         if (name === "วัด" && !isLocked) currentPoint = "2K บ่อขยะ";
         if (name === "โซ่สุ" && (day !== 0 && day !== 6) && !isLocked) currentPoint = "2A บ่อขยะ";
 
@@ -171,8 +180,9 @@ function handleSelectChange(select) {
 }
 
 function copyResult() {
-    const today = new Date();
-    let text = `💎 ตารางพนักงาน 💎\n📅 วัน${today.toLocaleDateString('th-TH', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}\n━━━━━━━━━━━━━━\n\n`;
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + 1);
+    let text = `💎 ตารางพนักงาน (ล่วงหน้า) 💎\n📅 วัน${targetDate.toLocaleDateString('th-TH', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}\n━━━━━━━━━━━━━━\n\n`;
     document.querySelectorAll('.staff-row').forEach((row, i) => {
         const name = row.querySelector('.staff-name').innerText;
         const lockDiv = row.querySelector('.locked');
@@ -182,7 +192,7 @@ function copyResult() {
         if (point.includes('หยุด')) text += `${i+1}. ${name} ➔ [ ${point} ]\n\n`;
         else text += `${i+1}. ${name} ➔ ${point} (${time})\n\n`;
     });
-    navigator.clipboard.writeText(text).then(() => alert("คัดลอกเรียบร้อย! 🚀"));
+    navigator.clipboard.writeText(text).then(() => alert("คัดลอกตารางวันพรุ่งนี้แล้ว! 🚀"));
 }
 renderList();
 </script>
