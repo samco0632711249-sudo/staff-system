@@ -2,160 +2,105 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Staff Master System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกเวลาทำงาน</title>
     <style>
-        :root { --primary: #1e3a8a; --bg-gradient: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%); }
-        
-        /* ปรับแต่งพื้นหลังให้ลื่นไหลบนมือถือ */
-        body { 
-            font-family: 'Kanit', sans-serif; 
-            background: var(--bg-gradient); 
-            background-attachment: fixed; 
-            margin: 0; 
-            padding: 10px; 
-            display: flex; 
-            justify-content: center; 
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container { 
-            max-width: 500px; 
-            width: 100%; 
-            background: rgba(255, 255, 255, 0.98); 
-            padding: 20px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
-            position: relative; 
-            height: fit-content; 
-        }
-        
-        h2 { color: var(--primary); text-align: center; font-size: 18px; margin: 5px 0 15px 0; }
-        
-        .btn-settings { 
-            position: absolute; right: 15px; top: 15px; 
-            background: #f1f5f9; padding: 10px; border-radius: 12px; 
-            cursor: pointer; border: 1px solid #e2e8f0; font-size: 16px;
-        }
-
-        .date-display { 
-            text-align: center; color: #1e40af; font-weight: 600; 
-            margin-bottom: 12px; background: #e0f2fe; padding: 10px; 
-            border-radius: 12px; font-size: 14px; 
-        }
-
-        .section { 
-            background: #f0fdf4; border-left: 4px solid #22c55e; 
-            border-radius: 12px; padding: 12px; margin-bottom: 15px; 
-        }
-
-        .ot-title { font-weight: 600; color: #166534; font-size: 13px; margin-bottom: 8px; }
-        .ot-hint { font-size: 10px; color: #15803d; background: #dcfce7; padding: 2px 6px; border-radius: 4px; }
-
-        .ot-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-        .ot-chip { 
-            cursor: pointer; background: white; border: 1px solid #cbd5e1; 
-            padding: 8px 12px; border-radius: 50px; font-size: 12px; 
-            display: flex; align-items: center; gap: 4px; user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .ot-chip.active { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: bold; }
-        .ot-count { background: #22c55e; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
-
-        .holiday-toggle-bar { 
-            display: flex; align-items: center; justify-content: space-between; 
-            background: #fffbeb; border: 2px solid #fcd34d; padding: 12px; 
-            border-radius: 15px; margin-bottom: 15px; cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .toggle-switch { width: 40px; height: 20px; background: #cbd5e1; border-radius: 50px; position: relative; transition: 0.3s; }
-        .toggle-switch::before { content: ""; width: 14px; height: 14px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: 0.3s; }
-        .holiday-toggle-bar.active .toggle-switch { background: #f59e0b; }
-        .holiday-toggle-bar.active .toggle-switch::before { left: 23px; }
-
-        /* แถวรายชื่อ: ปรับ Grid ให้รองรับหน้าจอแคบ */
-        .staff-row { 
-            display: grid; 
-            grid-template-columns: 85px 1fr 1fr; 
-            gap: 6px; 
-            padding: 10px 0; 
-            border-bottom: 1px solid #f1f5f9; 
-            align-items: center; 
-        }
-        
-        .staff-name { font-weight: 500; font-size: 13px; color: #334155; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        
-        select, .locked { 
-            width: 100%; padding: 8px 4px; border-radius: 8px; 
-            border: 1px solid #cbd5e1; font-family: 'Kanit'; 
-            font-size: 11px; outline: none; background: white; 
-            box-sizing: border-box; -webkit-appearance: none;
-        }
-        
-        .locked { text-align: center; font-weight: 600; background: #f8fafc; }
-        .locked.is-holiday { background: #fff5f5; color: #e03131; border-color: #ffc9c9; }
-        .time-blank { text-align: center; color: #cbd5e1; font-size: 12px; font-weight: bold; }
-
-        .btn-copy { 
-            width: 100%; padding: 16px; 
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); 
-            color: white; border: none; border-radius: 15px; 
-            font-size: 16px; font-weight: bold; cursor: pointer; 
-            margin-top: 15px; -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Admin Section */
-        .admin-panel { display: none; }
-        .admin-section-title { font-size: 14px; font-weight: 600; color: #475569; margin: 20px 0 10px 0; }
-        .admin-list-box { border: 1px solid #e2e8f0; border-radius: 12px; background: white; margin-bottom: 10px; }
-        .list-item { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
-        .admin-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 8px; font-family: 'Kanit'; font-size: 14px; box-sizing: border-box; }
-        .btn-primary, .btn-secondary, .btn-save { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-bottom: 8px; font-size: 14px; color: white; }
-        .btn-primary { background: #1e3a8a; }
-        .btn-secondary { background: #22c55e; }
-        .btn-save { background: #64748b; margin-top: 15px; }
-
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f0f2f5; color: #333; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1a73e8; }
+        .switch-group { display: flex; justify-content: space-between; align-items: center; background: #e8f0fe; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .staff-list { margin-top: 15px; }
+        .staff-item { background: #fff; border: 1px solid #ddd; padding: 12px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .staff-info { font-weight: bold; }
+        .status-working { color: #28a745; font-size: 0.9em; }
+        .status-off { color: #dc3545; font-size: 0.9em; font-weight: bold; }
+        button { width: 100%; padding: 15px; background-color: #1a73e8; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        button:active { background-color: #1557b0; }
+        .note { font-size: 12px; color: #666; text-align: center; margin-top: 10px; }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="container">
-    <div id="mainView">
-        <div class="btn-settings" onclick="toggleView()">⚙️</div>
-        <h2>✨ ตารางพนักงาน ✨</h2>
-        <div id="dateDisplay" class="date-display"></div>
-
-        <div class="section">
-            <div class="ot-title">🏠 แต้ม OT วันหยุด: <span class="ot-hint">แตะ=เพิ่ม | ค้าง=ลด</span></div>
-            <div id="otContainer" class="ot-group"></div>
-        </div>
-
-        <div id="holidayBar" class="holiday-toggle-bar" onclick="toggleHoliday()">
-            <span style="font-weight: 600; color: #92400e; font-size: 14px;">วันนี้เป็นนักขัตฤกษ์ 🚩</span>
-            <div class="toggle-switch"></div>
-        </div>
-
-        <div id="staffList"></div>
-        <button class="btn-copy" onclick="copyResult()">🚀 คัดลอกส่ง LINE 🚀</button>
+    <h2>ตารางทำงานพนักงาน</h2>
+    
+    <div class="switch-group">
+        <span>วันนี้เป็นนักขัตฤกษ์</span>
+        <input type="checkbox" id="holidaySwitch" style="width: 20px; height: 20px;" onchange="renderStaff()">
     </div>
 
-    <div id="adminView" class="admin-panel">
-        <div class="admin-section-title">🛠️ พนักงานหลัก 👥</div>
-        <div id="mainStaffList" class="admin-list-box"></div>
-        <input type="text" id="newMainInput" class="admin-input" placeholder="ชื่อพนักงานใหม่...">
-        <button class="btn-primary" onclick="addStaff('main')">เพิ่มชื่อ</button>
+    <div id="staffDisplay" class="staff-list"></div>
 
-        <div class="admin-section-title">🗓️ วันหยุดประจำวัน 📅</div>
-        <select id="daySelect" class="admin-input" onchange="renderAdminHolidayList()" style="-webkit-appearance: listbox;">
-            <option value="0">วันอาทิตย์</option>
-            <option value="1">วันจันทร์</option>
-            <option value="2">วันอังคาร</option>
-            <option value="3">วันพุธ</option>
-            <option value="4">วันพฤหัสบดี</option>
-            <option value="5">วันศุกร์</option>
-            <option value="6">วันเสาร์</option>
-        </select>
-        <div id="holidayStaffList" class
+    <button onclick="copyToLine()">📋 คัดลอกส่ง LINE</button>
+    <p class="note">ข้อมูลจะปรับอัตโนมัติตามเงื่อนไขของ พล และ กาญจนา</p>
+</div>
+
+<script>
+    const staffNames = ["บุญตา", "บิว", "นาวิน", "กาญจนา", "วัด", "จันทร์", "พล", "กิตติ", "โซ่สุ", "อุไร"];
+    
+    function renderStaff() {
+        const isHoliday = document.getElementById('holidaySwitch').checked;
+        const now = new Date();
+        const day = now.getDay(); // 0 = อาทิตย์, 6 = เสาร์
+        const isWeekend = (day === 0 || day === 6);
+        
+        const display = document.getElementById('staffDisplay');
+        display.innerHTML = '';
+
+        staffNames.forEach(name => {
+            let status = "07:00 - 19:00";
+            let isOff = false;
+            let note = "";
+
+            // เงื่อนไข พล
+            if (name === "พล") {
+                note = " (3K บ่อขยะ)";
+                if (isHoliday) { isOff = true; }
+            }
+
+            // เงื่อนไข กาญจนา
+            if (name === "กาญจนา") {
+                if (isWeekend || isHoliday) { isOff = true; }
+            }
+
+            const div = document.createElement('div');
+            div.className = 'staff-item';
+            div.innerHTML = `
+                <div class="staff-info">${name}${note}</div>
+                <div class="${isOff ? 'status-off' : 'status-working'}">
+                    ${isOff ? 'หยุด' : status}
+                </div>
+            `;
+            display.appendChild(div);
+        });
+    }
+
+    function copyToLine() {
+        const isHoliday = document.getElementById('holidaySwitch').checked;
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+        let text = `📅 รายงานการทำงาน\nประจำวันที่ ${dateStr}${isHoliday ? ' (นักขัตฤกษ์)' : ''}\n------------------\n`;
+        
+        const day = now.getDay();
+        const isWeekend = (day === 0 || day === 6);
+
+        staffNames.forEach(name => {
+            let isOff = false;
+            let note = (name === "พล") ? " (3K บ่อขยะ)" : "";
+            if (name === "พล" && isHoliday) isOff = true;
+            if (name === "กาญจนา" && (isWeekend || isHoliday)) isOff = true;
+
+            text += `${name}${note}: ${isOff ? 'หยุด' : '07:00 - 19:00'}\n`;
+        });
+
+        navigator.clipboard.writeText(text).then(() => {
+            alert('คัดลอกข้อมูลแล้ว! นำไปวางใน LINE ได้เลย');
+        });
+    }
+
+    // เริ่มต้นแสดงผล
+    renderStaff();
+</script>
+
+</body>
+</html>
