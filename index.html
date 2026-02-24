@@ -8,55 +8,80 @@
         :root { --primary: #1e3a8a; --bg-gradient: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%); }
         body { font-family: 'Kanit', sans-serif; background: var(--bg-gradient); background-attachment: fixed; margin: 0; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
         .container { max-width: 550px; width: 100%; background: rgba(255, 255, 255, 0.98); padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; height: fit-content; }
-        h2 { color: var(--primary); text-align: center; font-size: 19px; margin: 0 0 15px 0; }
+        h2 { color: var(--primary); text-align: center; font-size: 19px; margin: 0 0 10px 0; }
+        .btn-settings { position: absolute; right: 25px; top: 25px; background: #f1f5f9; padding: 8px; border-radius: 12px; cursor: pointer; border: 1px solid #e2e8f0; }
         .date-display { text-align: center; color: #1e40af; font-weight: 600; margin-bottom: 15px; background: #e0f2fe; padding: 8px; border-radius: 10px; font-size: 15px; }
-        
-        /* ส่วนแต้ม OT ที่หายไป */
         .section { background: #f0fdf4; border-left: 5px solid #22c55e; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
-        .ot-title { font-weight: 600; color: #166534; font-size: 14px; margin-bottom: 10px; }
         .ot-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .ot-chip { cursor: pointer; background: white; border: 1px solid #cbd5e1; padding: 7px 14px; border-radius: 50px; font-size: 13px; display: flex; align-items: center; gap: 5px; user-select: none; }
+        .ot-chip { cursor: pointer; background: white; border: 1px solid #cbd5e1; padding: 7px 14px; border-radius: 50px; font-size: 13px; display: flex; align-items: center; gap: 5px; }
         .ot-chip.active { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: bold; }
         .ot-count { background: #22c55e; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
-
         .holiday-toggle-bar { display: flex; align-items: center; justify-content: space-between; background: #fffbeb; border: 2px solid #fcd34d; padding: 15px; border-radius: 18px; margin-bottom: 15px; cursor: pointer; }
         .toggle-switch { width: 45px; height: 22px; background: #cbd5e1; border-radius: 50px; position: relative; transition: 0.3s; }
         .toggle-switch::before { content: ""; width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: 0.3s; }
         .holiday-toggle-bar.active .toggle-switch { background: #f59e0b; }
         .holiday-toggle-bar.active .toggle-switch::before { left: 26px; }
-
         .staff-row { display: grid; grid-template-columns: 100px 1fr 1fr; gap: 8px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; align-items: center; }
         .staff-name { font-weight: 500; font-size: 14px; color: #334155; }
         select, .locked { width: 100%; padding: 8px; border-radius: 10px; border: 1px solid #cbd5e1; font-family: 'Kanit'; font-size: 12px; outline: none; background: white; box-sizing: border-box; }
         .locked.is-holiday { background: #fff5f5; color: #e03131; border-color: #ffc9c9; text-align: center; font-weight: bold; }
         .locked.special-point { background: #e0f2fe; color: #0369a1; border-color: #7dd3fc; text-align: center; font-weight: bold; }
-        .btn-copy { width: 100%; padding: 18px; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; border: none; border-radius: 20px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .btn-copy { width: 100%; padding: 18px; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; border: none; border-radius: 20px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .settings-panel { display: none; }
+        .input-group { display: flex; gap: 5px; margin-top: 10px; }
+        input { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; font-family: 'Kanit'; }
+        .btn-add { background: #22c55e; color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; }
+        .btn-back { background: #64748b; color: white; border: none; padding: 15px; border-radius: 20px; width: 100%; margin-top: 10px; cursor: pointer; font-weight: bold; }
+        .list-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        .btn-del { color: #ef4444; cursor: pointer; font-weight: bold; }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="container">
-    <h2>✨ ตารางพนักงาน ✨</h2>
-    <div id="dateDisplay" class="date-display"></div>
+    <div id="mainView">
+        <div class="btn-settings" onclick="toggleView()">⚙️</div>
+        <h2>✨ ตารางพนักงาน ✨</h2>
+        <div id="dateDisplay" class="date-display"></div>
 
-    <div class="section">
-        <div class="ot-title">🏠 แต้ม OT วันหยุดสะสม: <span style="font-weight:normal; font-size:11px;">(คลิก=เพิ่ม/ค้าง=ลด)</span></div>
-        <div id="otContainer" class="ot-group"></div>
+        <div class="section">
+            <div style="font-weight: 600; color: #166534; font-size: 14px;">🏠 แต้ม OT วันหยุดสะสม: <span style="font-weight:normal; font-size:11px;">(คลิก=เพิ่ม/ค้าง=ลด)</span></div>
+            <div id="otContainer" class="ot-group"></div>
+        </div>
+
+        <div id="holidayBar" class="holiday-toggle-bar" onclick="toggleHoliday()">
+            <span style="font-weight: 600; color: #92400e;">วันนี้เป็นนักขัตฤกษ์ 🚩</span>
+            <div class="toggle-switch"></div>
+        </div>
+
+        <div id="staffList"></div>
+        <button class="btn-copy" onclick="copyResult()">🚀 คัดลอกส่ง LINE 🚀</button>
     </div>
 
-    <div id="holidayBar" class="holiday-toggle-bar" onclick="toggleHoliday()">
-        <span style="font-weight: 600; color: #92400e;">วันนี้เป็นนักขัตฤกษ์ 🚩</span>
-        <div class="toggle-switch"></div>
-    </div>
+    <div id="settingsView" class="settings-panel">
+        <h2 style="font-size: 16px;">🛠️ จัดการรายชื่อพนักงานหลัก 👥</h2>
+        <div id="mainStaffSettings"></div>
+        <div class="input-group">
+            <input type="text" id="newMainStaff" placeholder="เพิ่มชื่อพนักงานใหม่...">
+            <button class="btn-add" onclick="addItem('main')">เพิ่มชื่อ</button>
+        </div>
 
-    <div id="staffList"></div>
-    <button class="btn-copy" onclick="copyResult()">🚀 คัดลอกส่ง LINE 🚀</button>
+        <h2 style="font-size: 16px; margin-top: 25px;">📅 แก้ไขรายชื่อวันหยุดประจำวัน 🗓️</h2>
+        <select id="daySelect" onchange="renderSettings()" style="margin-bottom: 10px; font-size: 14px;"></select>
+        <div id="holidaySettings"></div>
+        <div class="input-group">
+            <input type="text" id="newHolidayStaff" placeholder="ชื่อพนักงานที่หยุดวันนี้...">
+            <button class="btn-add" style="background: #3b82f6;" onclick="addItem('holiday')">เพิ่มลงวันหยุด</button>
+        </div>
+        <button class="btn-back" onclick="toggleView()">💾 บันทึกและกลับหน้าหลัก ✅</button>
+    </div>
 </div>
 
 <script>
-const mainStaff = ["บุญตา", "บิว", "นาวิน", "กาญจนา", "วัด", "จันทร์", "พล", "กิตติ", "โซ่สุ", "อุไร"];
-const holidayDB = {
+// ข้อมูลเริ่มต้น
+let mainStaff = JSON.parse(localStorage.getItem('mainStaff_V7')) || ["บุญตา", "บิว", "นาวิน", "กาญจนา", "วัด", "จันทร์", "พล", "กิตติ", "โซ่สุ", "อุไร"];
+let holidayDB = JSON.parse(localStorage.getItem('holidayDB_V7')) || {
     0: ["สมัย", "สุนทรี", "ชัชชัย", "ขันธะลี", "จิรสุดา", "อิ่มตี้", "ติม", "ราณี", "กัญญาภัทร", "กิตติ"], 
     1: ["ชลธิชา", "รุ่งนภา", "เจาะ", "ลำพูน", "สุวันนา", "ชนัญชิตา", "อนุวัฒน์", "น้องลัด"], 
     2: ["ปาณิศรา", "จันทนา", "สุกัญญา", "เพียบ", "วุฒิ", "ปริยนุช", "อาท", "สุริยา", "หนูนิด", "จิดาภา", "จิตรพงษ์"], 
@@ -65,10 +90,20 @@ const holidayDB = {
     5: ["กรรณิกา", "น้ำอ้อย", "นิด", "ซูลกิฟลี", "ผ่องศรี", "แสง", "แตงโม", "บุญตา", "พลากร", "ลอย"], 
     6: ["วัด", "สายใจ", "เขมิกา", "ยุวดี", "นิตยา", "ปุ้ม", "นิดา", "ลำดวน", "โซ่สุ", "อุไร"]
 };
-
-const lockedTimes = ["07:00 - 19:00 ⏰", "08:00 - 20:00 ⏰", "09:30 - 20:30 ⏰", "10:00 - 22:00 ⏰"];
-let otHistory = JSON.parse(localStorage.getItem('otHistory_V6')) || {};
+let otHistory = JSON.parse(localStorage.getItem('otHistory_V7')) || {};
 let isHoliday = false;
+const lockedTimes = ["07:00 - 19:00 ⏰", "08:00 - 20:00 ⏰", "09:30 - 20:30 ⏰", "10:00 - 22:00 ⏰"];
+const dayNames = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
+
+function toggleView() {
+    const main = document.getElementById('mainView');
+    const settings = document.getElementById('settingsView');
+    if (main.style.display === 'none') {
+        main.style.display = 'block'; settings.style.display = 'none'; renderList();
+    } else {
+        main.style.display = 'none'; settings.style.display = 'block'; renderSettings();
+    }
+}
 
 function toggleHoliday() {
     isHoliday = !isHoliday;
@@ -76,29 +111,69 @@ function toggleHoliday() {
     renderList();
 }
 
-// ระบบจัดการ OT (คลิกเพิ่ม/ค้างลด)
+// ระบบจัดการชื่อ (เพิ่ม/ลบ)
+function addItem(type) {
+    if (type === 'main') {
+        const val = document.getElementById('newMainStaff').value.trim();
+        if (val) { mainStaff.push(val); document.getElementById('newMainStaff').value = ''; }
+    } else {
+        const day = document.getElementById('daySelect').value;
+        const val = document.getElementById('newHolidayStaff').value.trim();
+        if (val) { holidayDB[day].push(val); document.getElementById('newHolidayStaff').value = ''; }
+    }
+    saveData(); renderSettings();
+}
+
+function delItem(type, index) {
+    if (type === 'main') mainStaff.splice(index, 1);
+    else {
+        const day = document.getElementById('daySelect').value;
+        holidayDB[day].splice(index, 1);
+    }
+    saveData(); renderSettings();
+}
+
+function saveData() {
+    localStorage.setItem('mainStaff_V7', JSON.stringify(mainStaff));
+    localStorage.setItem('holidayDB_V7', JSON.stringify(holidayDB));
+}
+
+function renderSettings() {
+    const daySelect = document.getElementById('daySelect');
+    if (daySelect.options.length === 0) {
+        dayNames.forEach((d, i) => daySelect.add(new Option(d, i)));
+        daySelect.value = new Date().getDay();
+    }
+    const day = daySelect.value;
+    
+    let mainHtml = '';
+    mainStaff.forEach((n, i) => mainHtml += `<div class="list-item">${n} <span class="btn-del" onclick="delItem('main', ${i})">[ลบ]</span></div>`);
+    document.getElementById('mainStaffSettings').innerHTML = mainHtml;
+
+    let holHtml = '';
+    holidayDB[day].forEach((n, i) => holHtml += `<div class="list-item">${n} <span class="btn-del" onclick="delHoliday(${i})">[ลบ]</span></div>`);
+    document.getElementById('holidaySettings').innerHTML = holHtml;
+}
+function delHoliday(i) { const day = document.getElementById('daySelect').value; holidayDB[day].splice(i, 1); saveData(); renderSettings(); }
+
+// ระบบ OT (คลิกเพิ่ม/ค้างลด)
 let pressTimer;
 function updateOT(name, action) {
     let change = action === 'dec' ? -1 : 1;
     otHistory[name] = Math.max(0, (otHistory[name] || 0) + change);
-    localStorage.setItem('otHistory_V6', JSON.stringify(otHistory));
+    localStorage.setItem('otHistory_V7', JSON.stringify(otHistory));
     renderList();
 }
-
 function handleOTPointer(e, name) {
-    if (e.type === 'pointerdown') {
-        pressTimer = setTimeout(() => { updateOT(name, 'dec'); pressTimer = null; }, 600);
-    } else if (pressTimer) {
-        clearTimeout(pressTimer); updateOT(name, 'inc'); pressTimer = null;
-    }
+    if (e.type === 'pointerdown') { pressTimer = setTimeout(() => { updateOT(name, 'dec'); pressTimer = null; }, 600); }
+    else if (pressTimer) { clearTimeout(pressTimer); updateOT(name, 'inc'); pressTimer = null; }
 }
 
 function renderList() {
     const today = new Date();
     const day = today.getDay();
-    document.getElementById('dateDisplay').innerText = `📅 วัน${today.toLocaleDateString('th-TH', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}`;
+    document.getElementById('dateDisplay').innerText = `📅 ${today.toLocaleDateString('th-TH', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}`;
 
-    // เรนเดอร์แต้ม OT
     let otHtml = '';
     mainStaff.forEach(n => {
         let count = otHistory[n] || 0;
@@ -106,23 +181,19 @@ function renderList() {
     });
     document.getElementById('otContainer').innerHTML = otHtml;
 
-    // เรนเดอร์พนักงาน
     let html = '';
     mainStaff.forEach(name => {
         let p = "ว่าง", locked = false, customClass = "locked is-holiday";
 
-        // เช็ควันหยุดปกติ (หยุดพุธทั้ง พล และ กาญจนา)
-        if (holidayDB[day] && holidayDB[day].includes(name)) { 
-            p = "🏠 หยุดพักผ่อน"; 
-            locked = true; 
-        }
+        // เช็ควันหยุด
+        if (holidayDB[day] && holidayDB[day].includes(name)) { p = "🏠 หยุดพักผ่อน"; locked = true; }
 
-        // --- เงื่อนไข พล: นักขัตฤกษ์ทำงานปกติ (3K) ---
+        // พล: นักขัตฤกษ์ทำงานปกติ (3K) ไม่หยุด
         if (name === "พล") {
-            if (!locked) { p = "3K บ่อขยะ"; locked = false; }
+            if (!locked) p = "3K บ่อขยะ";
         }
 
-        // --- เงื่อนไข กาญจนา: นักขัตฤกษ์ไป ห้องน้ำ 2A ---
+        // กาญจนา: นักขัตฤกษ์ไป ห้องน้ำ 2A
         if (name === "กาญจนา" && isHoliday) {
             p = "ห้องน้ำ 2A"; locked = true; customClass = "locked special-point"; 
         }
@@ -130,19 +201,23 @@ function renderList() {
         if (name === "วัด" && !locked) p = "2K บ่อขยะ";
         if (name === "โซ่สุ" && (day !== 0 && day !== 6) && !locked) p = "2A บ่อขยะ";
 
+        // แก้ไขช่องเวลา: ถ้าหยุดให้ว่าง ( - )
+        const timeDisplay = locked && p.includes("หยุด") ? `<div style="text-align:center">-</div>` : 
+            `<select class="time-sel">${lockedTimes.map(t => `<option value="${t}">${t}</option>`).join('')}</select>`;
+
         html += `<div class="staff-row">
             <div class="staff-name">👤 ${name}</div>
             <div>${locked ? `<div class="${customClass}">${p}</div>` : 
-                `<select class="point-sel">
+                `<select class="point-sel" onchange="renderList()">
                     <option value="ว่าง">⚪ ว่าง</option>
                     <option value="2K บ่อขยะ" ${p==='2K บ่อขยะ'?'selected':''}>🚛 2K บ่อขยะ</option>
                     <option value="3K บ่อขยะ" ${p==='3K บ่อขยะ'?'selected':''}>🚛 3K บ่อขยะ</option>
                     <option value="2A บ่อขยะ" ${p==='2A บ่อขยะ'?'selected':''}>🚜 2A บ่อขยะ</option>
                     <option value="ห้องน้ำ 2A" ${p==='ห้องน้ำ 2A'?'selected':''}>🚽 ห้องน้ำ 2A</option>
-                    <option value="หยุด">🏠 หยุดพักผ่อน</option>
+                    <option value="หยุดพักผ่อน">🏠 หยุดพักผ่อน</option>
                 </select>`}
             </div>
-            <div><select class="time-sel">${lockedTimes.map(t => `<option value="${t}">${t}</option>`).join('')}</select></div>
+            <div class="time-container">${timeDisplay}</div>
         </div>`;
     });
     document.getElementById('staffList').innerHTML = html;
@@ -155,8 +230,11 @@ function copyResult() {
         const name = row.querySelector('.staff-name').innerText;
         const lStatus = row.querySelector('.locked');
         const p = lStatus ? lStatus.innerText : row.querySelector('.point-sel').value;
+        const timeSel = row.querySelector('.time-sel');
+        const timeVal = timeSel ? timeSel.value : "-";
+        
         if (p.includes('หยุด')) text += `${i+1}. ${name} ➔ [ ${p} ]\n\n`;
-        else text += `${i+1}. ${name} ➔ ${p} (${row.querySelector('.time-sel').value})\n\n`;
+        else text += `${i+1}. ${name} ➔ ${p} (${timeVal})\n\n`;
     });
     navigator.clipboard.writeText(text).then(() => alert("คัดลอกเรียบร้อย! 🚀"));
 }
