@@ -3,63 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Staff Master V50 - Swapped Edition</title>
+    <title>Staff Master V51</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #1e3a8a; --accent: #22c55e; --red: #ef4444; --bg: #f8fafc; }
         body { font-family: 'Kanit', sans-serif; background: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%); margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; }
-        .container { max-width: 500px; width: 100%; background: #fff; padding: 15px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; }
+        .container { max-width: 500px; width: 100%; background: #fff; padding: 15px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         h2 { color: var(--primary); text-align: center; font-size: 20px; margin: 5px 0 15px 0; }
         .date-display { text-align: center; color: var(--primary); font-weight: 600; margin-bottom: 12px; background: #eef2ff; padding: 10px; border-radius: 15px; border: 1px solid #ddd; }
+        
         .section-ot { background: #f0fdf4; border-left: 5px solid var(--accent); border-radius: 15px; padding: 12px; margin-bottom: 15px; }
         .ot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
-        .ot-card { background: white; padding: 8px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .ot-name { font-size: 13px; font-weight: 600; color: #334155; }
+        .ot-card { background: white; padding: 8px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .ot-controls { display: flex; align-items: center; gap: 10px; }
-        .ot-btn { width: 26px; height: 26px; border-radius: 8px; border: none; color: white; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .ot-btn { width: 26px; height: 26px; border-radius: 8px; border: none; color: white; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
         .btn-minus { background: #94a3b8; }
         .btn-plus { background: var(--accent); }
-        .staff-row { display: grid; grid-template-columns: 85px 1fr 1fr 45px; gap: 8px; align-items: center; padding: 10px; background: #f1f5f9; border-radius: 15px; margin-bottom: 8px; border: 1px solid #e2e8f0; }
-        .status-off { background: #fee2e2; color: var(--red); text-align: center; padding: 6px; border-radius: 10px; font-weight: bold; font-size: 12px; border: 1px solid #fecaca; }
-        .input-box, .select-box { width: 100%; padding: 6px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: 'Kanit'; font-size: 12px; }
+
+        .staff-row { display: grid; grid-template-columns: 85px 1fr 1fr 45px; gap: 8px; align-items: center; padding: 10px; background: #f1f5f9; border-radius: 15px; margin-bottom: 8px; position: relative; }
+        .status-off { background: #fee2e2; color: var(--red); text-align: center; padding: 6px; border-radius: 10px; font-weight: bold; font-size: 12px; }
+        .input-box, .select-box { width: 100%; padding: 6px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: 'Kanit'; font-size: 11px; }
+
         .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--red); }
         input:checked + .slider:before { transform: translateX(18px); }
+
+        .mgmt-btn { width: 100%; padding: 10px; background: #64748b; color: white; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; margin-bottom: 15px; }
         .btn-copy { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
+        /* Modal Style */
+        #mgmtModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+        .name-edit-row { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .del-btn { background: var(--red); color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; }
     </style>
 </head>
 <body>
+
 <div class="container">
-    <h2>✨ ตารางพนักงาน V50 (สลับ พล/อาท) ✨</h2>
+    <h2>✨ Staff System ✨</h2>
     <div id="dateDisplay" class="date-display"></div>
+
+    <button class="mgmt-btn" onclick="openMgmt()">⚙️ จัดการรายชื่อพนักงาน</button>
+
     <div class="section-ot">
         <div style="font-size: 13px; font-weight: bold; color: #166534; margin-bottom: 8px;">🏠 รายชื่อคนหยุด (สะสมแต้ม OT)</div>
         <div id="otGrid" class="ot-grid"></div>
     </div>
+
     <div id="staffList"></div>
     <button class="btn-copy" onclick="copyResult()">🚀 คัดลอกส่ง LINE 🚀</button>
 </div>
 
-<script>
-    const mainStaff = ["บุญตา", "บิว", "นาวิน", "กาญจนา", "วัด", "จันทร์", "พล", "กิตติ", "โซ่สุ", "อุไร"];
-    const tms = ["07:00 - 19:00 ⏰", "08:00 - 20:00 ⏰", "08:00 - 19:00 ⏰", "09:00 - 21:00 ⏰", "09:30 - 20:30 ⏰", "09:30 - 21:30 ⏰", "10:00 - 22:00 ⏰", "10:00 - 21:00 ⏰"];
+<div id="mgmtModal">
+    <div class="modal-content">
+        <h3>จัดการพนักงาน</h3>
+        <div id="mgmtList"></div>
+        <hr>
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="newName" placeholder="ชื่อพนักงานใหม่" style="flex:1; padding:10px; border-radius:10px; border:1px solid #ddd;">
+            <button onclick="addNewStaff()" style="background:var(--accent); color:white; border:none; border-radius:10px; padding:10px;">เพิ่ม</button>
+        </div>
+        <button onclick="closeMgmt()" style="width:100%; margin-top:20px; padding:10px; border-radius:10px; border:none; background:#eee;">ปิดหน้าต่าง</button>
+    </div>
+</div>
 
+<script>
+    let mainStaff = JSON.parse(localStorage.getItem('mainStaff_v51')) || ["บุญตา", "บิว", "นาวิน", "กาญจนา", "วัด", "จันทร์", "พล", "กิตติ", "โซ่สุ", "อุไร"];
+    const tms = ["07:00 - 19:00 ⏰", "08:00 - 20:00 ⏰", "08:00 - 19:00 ⏰", "09:00 - 21:00 ⏰", "09:30 - 20:30 ⏰", "09:30 - 21:30 ⏰", "10:00 - 22:00 ⏰", "10:00 - 21:00 ⏰"];
     const weeklyHolidays = {
         0: ["สมัย", "สุนทรี", "ชัชชัย", "ขันธะลี", "จิรสุดา", "อิ่มตี้", "ติม", "ราณี", "กัญญาภัทร", "กิตติ"],
         1: ["ชลธิชา", "รุ่งนภา", "เจาะ", "ลำพูน", "สุวันนา", "ชนัญชิตา", "อนุวัฒน์", "น้องลัด"],
-        2: ["ปาณิศรา", "จันทนา", "สุกัญญา", "เพียบ", "วุฒิ", "ปริยนุช", "พล", "สุริยา", "หนูนิด", "จิดาภา", "จิตรพงษ์"], // พล สลับมานี่
-        3: ["แพงศรี", "กาญจนา", "อาท", "ทองสูน", "ประไพ", "ประพันธ์แสง", "ธวัช", "ปราโมทย์", "สุชาดา", "อนงค์", "วรรตาภา", "พิมวดี"], // อาท สลับมานี่
+        2: ["ปาณิศรา", "จันทนา", "สุกัญญา", "เพียบ", "วุฒิ", "ปริยนุช", "พล", "สุริยา", "หนูนิด", "จิดาภา", "จิตรพงษ์"],
+        3: ["แพงศรี", "กาญจนา", "อาท", "ทองสูน", "ประไพ", "ประพันธ์แสง", "ธวัช", "ปราโมทย์", "สุชาดา", "อนงค์", "วรรตาภา", "พิมวดี"],
         4: ["แอ๊ะแอ๊ะ", "ณิชาดา", "สมสาย", "สีนวล", "ดาด้า", "อำนวย", "ลัดดาวัลย์", "จันทร์", "บิว", "นาวิน"],
         5: ["กรรณิกา", "น้ำอ้อย", "นิด", "ซูลกิฟลี", "ผ่องศรี", "แสง", "แตงโม", "บุญตา", "พลากร", "ลอย"],
         6: ["วัด", "สายใจ", "เขมิกา", "ยุวดี", "นิตยา", "ปุ้ม", "นิดา", "ลำดวน", "โซ่สุ", "อุไร"]
     };
 
-    let otData = JSON.parse(localStorage.getItem('ot_v50')) || {};
-    let statusData = JSON.parse(localStorage.getItem('status_v50')) || {};
-    let cacheData = JSON.parse(localStorage.getItem('cache_v50')) || {};
+    let otData = JSON.parse(localStorage.getItem('ot_v51')) || {};
+    let statusData = JSON.parse(localStorage.getItem('status_v51')) || {};
+    let cacheData = JSON.parse(localStorage.getItem('cache_v51')) || {};
 
     function init() {
         let d = new Date(); d.setDate(d.getDate() + 1);
@@ -78,53 +105,69 @@
             if(i) cacheData[n+'_p'] = i.value;
             if(s) cacheData[n+'_t'] = s.value;
         });
-        localStorage.setItem('cache_v50', JSON.stringify(cacheData));
-    }
-
-    function updOT(n, v) {
-        save();
-        otData[n] = Math.max(0, (otData[n] || 0) + v);
-        localStorage.setItem('ot_v50', JSON.stringify(otData));
-        render();
-    }
-
-    function toggleOff(n) {
-        save();
-        statusData[n] = !statusData[n];
-        localStorage.setItem('status_v50', JSON.stringify(statusData));
-        render();
+        localStorage.setItem('cache_v51', JSON.stringify(cacheData));
     }
 
     function render() {
         let d = new Date(); d.setDate(d.getDate() + 1);
         let day = d.getDay();
         document.getElementById('dateDisplay').innerText = "📅 วัน" + d.toLocaleDateString('th-TH', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+
         let offList = [...weeklyHolidays[day].filter(n => !mainStaff.includes(n))];
         mainStaff.forEach(n => { if(statusData[n]) offList.push(n); });
         offList.sort();
+
         let oh = '';
         offList.forEach(n => {
-            oh += `<div class="ot-card"><span class="ot-name">${n}</span>
-                    <div class="ot-controls">
-                        <button class="ot-btn btn-minus" onclick="updOT('${n}',-1)">-</button>
-                        <span class="ot-val">${otData[n] || 0}</span>
-                        <button class="ot-btn btn-plus" onclick="updOT('${n}',1)">+</button>
-                    </div></div>`;
+            oh += `<div class="ot-card"><b>${n}</b>
+                <div class="ot-controls">
+                    <button class="ot-btn btn-minus" onclick="updOT('${n}',-1)">-</button>
+                    <span style="font-weight:bold;">${otData[n] || 0}</span>
+                    <button class="ot-btn btn-plus" onclick="updOT('${n}',1)">+</button>
+                </div></div>`;
         });
         document.getElementById('otGrid').innerHTML = oh;
+
         let sh = '';
         mainStaff.forEach(n => {
             let isOff = statusData[n];
             let p = cacheData[n+'_p'] || (n==="พล"?"3K บ่อขยะ":(n==="วัด"?"2K บ่อขยะ":"ว่าง"));
             let t = cacheData[n+'_t'] || "07:00 - 19:00 ⏰";
             sh += `<div class="staff-row" data-name="${n}">
-                <div style="font-weight:600; font-size:13px;">${n}</div>
+                <div style="font-weight:600;">${n}</div>
                 <div>${isOff ? '<div class="status-off">หยุดพักผ่อน</div>' : `<input type="text" class="input-box" value="${p}" onchange="save()">`}</div>
                 <div>${isOff ? '' : `<select class="select-box" onchange="save()">${tms.map(v=>`<option ${t===v?'selected':''}>${v}</option>`).join('')}</select>`}</div>
                 <div style="text-align:right;"><label class="switch"><input type="checkbox" ${isOff?'checked':''} onchange="toggleOff('${n}')"><span class="slider"></span></label></div>
             </div>`;
         });
         document.getElementById('staffList').innerHTML = sh;
+    }
+
+    function toggleOff(n) { save(); statusData[n] = !statusData[n]; localStorage.setItem('status_v51', JSON.stringify(statusData)); render(); }
+    function updOT(n, v) { save(); otData[n] = Math.max(0, (otData[n] || 0) + v); localStorage.setItem('ot_v51', JSON.stringify(otData)); render(); }
+    
+    function openMgmt() {
+        let mh = '';
+        mainStaff.forEach((n, idx) => {
+            mh += `<div class="name-edit-row"><span>${n}</span><button class="del-btn" onclick="removeStaff(${idx})">ลบ</button></div>`;
+        });
+        document.getElementById('mgmtList').innerHTML = mh;
+        document.getElementById('mgmtModal').style.display = 'flex';
+    }
+    function closeMgmt() { document.getElementById('mgmtModal').style.display = 'none'; }
+    function addNewStaff() {
+        let name = document.getElementById('newName').value.trim();
+        if(name && !mainStaff.includes(name)) {
+            mainStaff.push(name);
+            localStorage.setItem('mainStaff_v51', JSON.stringify(mainStaff));
+            document.getElementById('newName').value = '';
+            openMgmt(); render();
+        }
+    }
+    function removeStaff(idx) {
+        mainStaff.splice(idx, 1);
+        localStorage.setItem('mainStaff_v51', JSON.stringify(mainStaff));
+        openMgmt(); render();
     }
 
     function copyResult() {
